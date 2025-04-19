@@ -15,7 +15,7 @@ const Navbar = () => {
                 alignItems: "center",
             }}>
                 <h1 style={{padding: "0 100px"}}>HubPost</h1>
-                <nav style={{display: "flex", gap: "20px", padding: "0 90px"}}>
+                <nav style={{display: "flex", gap: "20px", padding: "0 50px"}}>
                     <Link to="/" style={{ color: "inherit"}}>
                         <h2>HOME</h2>
                     </Link>

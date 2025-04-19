@@ -1,7 +1,7 @@
 #root {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  /* margin: 0 auto;
+  padding: 2rem; */
   text-align: center;
 }
 
@@ -34,7 +34,52 @@
 }
 
 .card {
-  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  width: 500px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  color: rgb(26, 26, 30);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 15px 0;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-footer img {
+  width: 24px;
+  height: auto;
+  cursor: pointer;
+}
+
+.card-footer p {
+  margin: 0;
+  font-weight: 500;
 }
 
 .read-the-docs {
