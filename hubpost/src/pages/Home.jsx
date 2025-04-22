@@ -47,7 +47,7 @@ const Home = () => {
                     justifyContent: "center",
                 }}>
                     {posts?.map((post, index) => (
-                        <PostCard key={index} id={post.id} name={post.name} title={post.post_title} exercise={post.exercise_name} imgURL={post.imageURL} feedback={post.feedback} likes={post.post_likes} created={post.created_at} postLiked={setPostLiked}/>
+                        <PostCard key={index} id={post.id} name={post.name} title={post.post_title} exercise={post.exercise_name} imgURL={post.imageURL} feedback={post.feedback} likes={post.post_likes} created={post.created_at} postLiked={setPostLiked} fetchPost={fetchPosts}/>
                     ))}
                 </div>
             </div>
