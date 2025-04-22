@@ -106,7 +106,7 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
                         setIsModalOpen(true)
                     }}/>
                 </div>
-                {commentClicked && (
+                {commentClicked && comments.length > 0 ? (
                     <div style={{display: "flex", flexDirection: "column", alignItems: "center", width: "90%", height: "100%", border: "1px solid #666666", borderRadius: "8px", padding: "20px", gap: "10px"}}>
                         {comments?.map((comment, index) => (
                             <div style={{display: "flex", gap: "5px", justifyContent: "space-between", alignItems: "center", width: "100%"}}>
@@ -115,7 +115,7 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
                             </div>
                         ))}
                     </div>
-                )}
+                ) : null}
             </div>
             {/* Modal for Edit/Delete Posts */}
             {contextHolder}
