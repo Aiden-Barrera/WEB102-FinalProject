@@ -3,12 +3,15 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "../Client"
 import {notification} from "antd"
 import PostCard from "../components/PostCard"
+import {Input} from "antd"
 
 const Home = () => {
     const [posts, setPosts] = useState(null)
     const [postLiked, setPostLiked] = useState(false)
     const [api, contextHolder] = notification.useNotification();
     const location = useLocation()
+    const [userSearched, setUserSearched] = useState("")
+    
 
     useEffect(() => {
         if (location.state?.postCreated) {
@@ -32,6 +35,15 @@ const Home = () => {
         fetchPosts()
     }, [postLiked])
 
+    const handleChange = (e) => {
+        setUserSearched(e.target.value)
+    }
+
+
+    if (!posts) {
+        return (<div style={{display: "flex", justifyContent: "center", alignItems: "center", fontSize: "48px", fontWeight: "700", width: "100vw"}}>Loading...</div>)
+    }
+
     return (
         <>
             {contextHolder}
@@ -40,6 +52,11 @@ const Home = () => {
             </div>
             <div style={{display: "flex", flexDirection: "column", gap: "20px", justifyContent: "center", backgroundColor: "rgb(239,239,240)", width: "100vw", height: "auto", padding: "50px"}}>
                 <h1 style={{color: "rgb(26, 26, 30)"}}>Community Workout Post</h1>
+                <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                    <Input style={{fontSize: "18px", width: "300px", borderRadius: "18px"}} value={userSearched} onChange={handleChange} placeholder="Search by Post Title..." 
+                        prefix={<img src="/searchIcon.svg" alt="Icon" style={{ width: "24px", marginRight: "5px" }} />}
+                    />
+                </div>
                 <div style={{
                     display: "flex",
                     flexWrap: "wrap",

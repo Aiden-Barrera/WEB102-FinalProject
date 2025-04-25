@@ -9,12 +9,13 @@ const { TextArea } = Input;
 
 const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, postLiked, fetchPost}) => {
     const [date, setDate] = useState(() => dayjs())
-    const [commentDate, setCommentDate] = useState(() => dayjs())
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [form] = Form.useForm()
     const [api, contextHolder] = notification.useNotification();
     const [commentClicked, setCommentClicked] = useState(false)
     const [comments, setComments] = useState(null)
+    const [userComment, setUserComment] = useState("")
+    const [commentSent, setCommentSent] = useState(false)
 
 
     useEffect(() => {
@@ -42,7 +43,7 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
         api.open({
             message: 'Success!',
             description:
-                `Workout Post Successfully Created!`,
+                `Workout Post Successfully Edited!`,
         })
         fetchPost()
         setIsModalOpen(false)
@@ -69,12 +70,29 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
         const {data} = await supabase.from("Comments")
             .select()
             .eq("post_id", id)
-            .order('created_at', { ascending: false })
+            .order('created_at', { ascending: true })
         setComments(data)
-        setCommentDate(dayjs(data.created_at))
         console.log(data)
     }
 
+    useEffect(() => {
+        fetchComments()
+    }, [commentSent])
+
+    const handleChange = (e) => {
+        console.log(e.target.value)
+        setUserComment(e.target.value)
+    }
+
+    const sendComment = async () => {
+        if (userComment === "") return 
+
+        await supabase.from("Comments")
+            .insert({post_id: id, comment: userComment})
+            .select()
+        setCommentSent(!commentSent)
+        setUserComment("")
+    }
 
 
     return (
@@ -94,6 +112,7 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
                     <img src="comment.svg" alt="Like Button" onClick={() => {
                         fetchComments()
                         setCommentClicked(!commentClicked)
+                        setUserComment("")
                     }} style={{marginLeft: "20px"}}/>
                     <img src="edit.svg" alt="Edit Button" style={{marginLeft: "auto"}} onClick={() => {
                         form.setFieldsValue({
@@ -106,16 +125,24 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
                         setIsModalOpen(true)
                     }}/>
                 </div>
-                {commentClicked && comments.length > 0 ? (
-                    <div style={{display: "flex", flexDirection: "column", alignItems: "center", width: "90%", height: "100%", border: "1px solid #666666", borderRadius: "8px", padding: "20px", gap: "10px"}}>
-                        {comments?.map((comment, index) => (
-                            <div style={{display: "flex", gap: "5px", justifyContent: "space-between", alignItems: "center", width: "100%"}}>
-                                <p key={index} style={{fontSize: "16px", margin: 0, maxWidth: "335px"}}>{comment.comment}</p>
-                                <p key={index} style={{fontSize: "12px", margin: 0}}>{commentDate.format("MMM DD, YYYY")}</p>
-                            </div>
-                        ))}
-                    </div>
-                ) : null}
+                {commentClicked && (
+                    <>
+                        <div style={{display: "flex", flexDirection: "column", alignItems: "center", width: "90%", height: "100%", maxHeight: "150px", overflow: "auto", border: "1px solid #666666", borderRadius: "8px", padding: "20px", gap: "10px"}}>
+                            {comments?.map((comment, index) => (
+                                <div style={{display: "flex", gap: "5px", justifyContent: "space-between", alignItems: "center", width: "100%"}}>
+                                    <p key={index*2} style={{fontSize: "16px", margin: 0, maxWidth: "335px"}}>{comment.comment}</p>
+                                    <p key={index*2+1} style={{fontSize: "12px", margin: 0}}>{dayjs(comment.created_at).format("MMM DD, YYYY")}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{display: "flex", gap: "10px", justifyContent: "flex-start", alignItems: "center", width: "100%"}}>
+                            <Input style={{fontSize: "18px"}} value={userComment} onChange={handleChange} placeholder="Leave a comment to this post!"/>
+                            <Button style={{width: "100%", borderRadius: "18px", padding: "18px 0px", backgroundColor: "rgb(26, 26, 30)", fontSize: "18px", fontWeight: "700", color: "#ffffff"}} onClick={sendComment}>
+                                Send Comment
+                            </Button>
+                        </div>
+                    </>
+                )}
             </div>
             {/* Modal for Edit/Delete Posts */}
             {contextHolder}
@@ -174,7 +201,7 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
                             </Form.Item>
                             <Form.Item>
                                 <Button type="primary" htmlType="submit" 
-                                    style={{width: "100%", borderRadius: "18px", padding: "22px 0px", backgroundColor: "rgb(88,185,158)", fontSize: "18px", fontWeight: "700"}}>Submit</Button>
+                                    style={{width: "100%", borderRadius: "18px", padding: "22px 0px", backgroundColor: "rgb(88,185,158)", fontSize: "18px", fontWeight: "700"}} >Submit</Button>
                             </Form.Item>
                             {/* backgroundColor: "rgb(239, 71, 111)" */}
                             <Form.Item>
