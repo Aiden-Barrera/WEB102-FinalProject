@@ -8,7 +8,6 @@ const { TextArea } = Input;
 
 
 const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, postLiked, fetchPost}) => {
-    const [date, setDate] = useState(() => dayjs())
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [form] = Form.useForm()
     const [api, contextHolder] = notification.useNotification();
@@ -16,11 +15,6 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
     const [comments, setComments] = useState(null)
     const [userComment, setUserComment] = useState("")
     const [commentSent, setCommentSent] = useState(false)
-
-
-    useEffect(() => {
-        setDate(dayjs(created))
-    }, [])
 
     const handleClick = async () => {
         await supabase.from("Posts")
@@ -100,7 +94,7 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
             <div className="card">
                 <div className="card-header">
                     <h3>{name}</h3>
-                    <h3>{date.format("MMM DD, YYYY")}</h3>
+                    <h3>{dayjs(created).format("MMM DD, YYYY")}</h3>
                 </div>
                 <h1 className="card-title">{title}</h1>
                 <img src={imgURL} alt="Exercise IMG" />

@@ -4,7 +4,18 @@ import { supabase } from "../Client"
 import {notification} from "antd"
 import PostCard from "../components/PostCard"
 import { LoadingOutlined } from '@ant-design/icons';
-import {Input, Spin, message} from "antd"
+import {Input, Spin, message, Dropdown} from "antd"
+
+const items = [
+    {
+        key: '1',
+        label: "Newest"
+    }, 
+    {
+        key: "2",
+        label: "Oldest"
+    }
+]
 
 const Home = () => {
     const [posts, setPosts] = useState(null)
@@ -55,6 +66,21 @@ const Home = () => {
         }
     }
 
+    const orderBy = (key) => {
+        const base = filteredPost || posts;
+    
+        const sorted = [...base].sort((a, b) => {
+            const dateA = new Date(a.created_at);
+            const dateB = new Date(b.created_at);
+            return key === '1'
+                ? dateB - dateA 
+                : dateA - dateB;
+        });
+        console.log(sorted)
+    
+        setFilteredPost(sorted);
+    };
+
 
     if (!posts) {
         return (
@@ -86,6 +112,14 @@ const Home = () => {
                     <Input style={{fontSize: "18px", width: "500px", borderRadius: "18px", marginBottom: "20px"}} value={userSearched} onChange={handleChange} placeholder="Search by Post Title..." 
                         suffix={<img src="/searchIcon.svg" alt="Icon" style={{ width: "24px", marginLeft: "5px",cursor: "pointer" }} onClick={handleSearch}/>}
                     />
+                    <Dropdown menu={{
+                        items,
+                        onClick: (e) => orderBy(e.key)
+                    }}
+                    placement="bottom" arrow={{ pointAtCenter: true }}
+                    >
+                        <img src="/filter.svg" alt="filter icon" style={{ width: "24px", marginLeft: "10px", cursor: "pointer", marginBottom: "20px" }} />
+                    </Dropdown>
                 </div>
                 <div style={{
                     display: "flex",
