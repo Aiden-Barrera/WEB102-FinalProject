@@ -25,6 +25,8 @@ const Home = () => {
     const location = useLocation()
     const [userSearched, setUserSearched] = useState("")
     const [filteredPost, setFilteredPost] = useState(null)
+    const [displayedPosts, setDisplayedPosts] = useState(null); // Posts being shown (filtered/sorted)
+    const [sortOrder, setSortOrder] = useState("1"); // "1" for Newest, "2" for Oldest
     
 
     useEffect(() => {
@@ -38,12 +40,20 @@ const Home = () => {
     }, [location.state])
 
     const fetchPosts = async () => {
-        const {data} = await supabase.from("Posts")
-            .select()
-            .order('created_at', { ascending: false })
-        setPosts(data)
-        setPostLiked(false)
-    }
+        const { data } = await supabase.from("Posts")
+            .select();
+    
+        // Apply the current sorting preference
+        const sorted = [...data].sort((a, b) => {
+            const dateA = new Date(a.created_at);
+            const dateB = new Date(b.created_at);
+            return sortOrder === '1' ? dateB - dateA : dateA - dateB;
+        });
+    
+        setPosts(sorted);
+        setDisplayedPosts(sorted);
+        setPostLiked(false);
+    };
 
     useEffect(()=>{
         fetchPosts()
@@ -54,31 +64,30 @@ const Home = () => {
     }
 
     const handleSearch = () => {
-        if (userSearched === "") return setFilteredPost(posts)
-        const filtered = posts.filter((post) => post.post_title.toLowerCase().includes(userSearched.toLowerCase()))
-        if (filtered.length > 0){
-            setFilteredPost(filtered)
+        if (userSearched === "") return setDisplayedPosts(posts);
+        
+        const filtered = posts.filter((post) =>
+            post.post_title.toLowerCase().includes(userSearched.toLowerCase())
+        );
+    
+        if (filtered.length > 0) {
+            setDisplayedPosts(filtered);
         } else {
             messageApi.open({
                 type: 'error',
                 content: 'No Post Title Matched!',
-              });
+            });
         }
-    }
+    };
 
     const orderBy = (key) => {
-        const base = filteredPost || posts;
-    
-        const sorted = [...base].sort((a, b) => {
+        setSortOrder(key); // Save the current order
+        const sorted = [...displayedPosts].sort((a, b) => {
             const dateA = new Date(a.created_at);
             const dateB = new Date(b.created_at);
-            return key === '1'
-                ? dateB - dateA 
-                : dateA - dateB;
+            return key === '1' ? dateB - dateA : dateA - dateB;
         });
-        console.log(sorted)
-    
-        setFilteredPost(sorted);
+        setDisplayedPosts(sorted);
     };
 
 
@@ -127,9 +136,7 @@ const Home = () => {
                     gap: "30px",
                     justifyContent: "center",
                 }}>
-                    {filteredPost ? filteredPost?.map((post, index) => (
-                        <PostCard key={index} id={post.id} name={post.name} title={post.post_title} exercise={post.exercise_name} imgURL={post.imageURL} feedback={post.feedback} likes={post.post_likes} created={post.created_at} postLiked={setPostLiked} fetchPost={fetchPosts}/>
-                    )) : posts?.map((post, index) => (
+                    {displayedPosts?.map((post, index) => (
                         <PostCard key={index} id={post.id} name={post.name} title={post.post_title} exercise={post.exercise_name} imgURL={post.imageURL} feedback={post.feedback} likes={post.post_likes} created={post.created_at} postLiked={setPostLiked} fetchPost={fetchPosts}/>
                     ))}
                 </div>

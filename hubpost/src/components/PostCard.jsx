@@ -20,6 +20,7 @@ const PostCard = ({id, name, title, exercise, imgURL, feedback, likes, created, 
         await supabase.from("Posts")
             .update({post_likes: likes+1})
             .eq("id", id)
+        fetchPost()
         postLiked(true)
     }
 
